@@ -125,7 +125,7 @@ async function initClient() {
 initClient();
 
 // === ROUTE AUTH PAR PAIRING CODE ===
-app.post('/auth/pair', async (req, res) => {
+app.post('/pair', async (req, res) => {
   const { number } = req.body;
   if (!number) return res.status(400).json({ error: 'Numéro requis (ex: 229XXXXXXXX)' });
 
