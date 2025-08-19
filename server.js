@@ -1,43 +1,40 @@
-// === DEPENDANCES ===
 import express from "express";
-import { Client, LocalAuth } from "whatsapp-web.js";
+import cors from "cors";
 import dotenv from "dotenv";
-const cors = require('cors');
+import pkg from "whatsapp-web.js";
+
+const { Client, LocalAuth } = pkg; // ✅ destructuration après import
 
 dotenv.config();
 
 const app = express();
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
 
-// === ROUTE POUR DEMANDER LE PAIRING CODE ===
+// Exemple route
 app.post("/pair", async (req, res) => {
   const { phone } = req.body;
-  if (!phone) {
-    return res.status(400).json({ error: "Numéro de téléphone requis" });
-  }
+  if (!phone) return res.status(400).json({ error: "Numéro requis" });
 
-  // Création d'un client WhatsApp
   const client = new Client({
-    authStrategy: new LocalAuth({ clientId: phone }), // chaque numéro a son propre dossier de session
+    authStrategy: new LocalAuth({ clientId: phone })
   });
 
-  // Quand un pairing code est dispo
+  client.on("qr", (qr) => {
+    console.log("QR reçu:", qr);
+  });
+
   client.on("pairing-code", (code) => {
     console.log(`Code de liaison pour ${phone} : ${code}`);
     res.json({ phone, pairing_code: code });
   });
 
-  // Quand c'est connecté
   client.on("ready", () => {
-    console.log(`✅ ${phone} connecté avec succès`);
+    console.log(`✅ ${phone} connecté`);
   });
 
   client.initialize();
 });
 
-// === DEMARRAGE DU SERVEUR ===
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 Serveur WhatsApp en écoute sur http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`🚀 Serveur en écoute sur ${PORT}`));
