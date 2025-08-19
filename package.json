@@ -2,7 +2,7 @@
   "name": "whatsapp-pairing-server",
   "version": "1.0.0",
   "description": "Mini serveur Express pour générer un pairing code WhatsApp via whatsapp-web.js",
-  "main": "index.js",
+  "main": "server.js",
   "type": "module",
   "scripts": {
     "start": "node index.js"
